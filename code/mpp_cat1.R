@@ -95,7 +95,7 @@ ggplot(mem.sub, aes(x=logp, y = reorder(X, logp), size = Hits.total,  col = enri
     labs(col = "Enrichment")
 #dev.off()
 
-tiff("figures/pathways.comparison.black.tiff", width = 5.7, height = 4, units = 'in', res = 300)
+tiff("figures/pathways.comparison.black.tiff", width = 6.5, height = 4, units = 'in', res = 300)
 
 ### No overlap size on graph, enrichment as size of bubble
 mem.sub$label <- paste0(mem.sub$X," (",mem.sub$Hits.sig,"/", mem.sub$Pathway.total,")")
@@ -201,14 +201,23 @@ for(i in 1:7){
     box.plot.mpp$log.intensity <- log2(box.plot.mpp$Intensity)
     box.plot.mpp$neuro <- rep("MPP", 10)
     box.plot.all <- rbind(box.plot, box.plot.mpp)
+    box.plot.all$Strain.label <- case_when(
+        box.plot.all$Strain == "C" ~ "Control",
+        box.plot.all$Strain == "MPP" ~ "MPP+",
+        box.plot.all$Strain == "cat1" ~ "cat-1",
+        box.plot.all$Strain == "N2" ~ "N2"
+    )
+    box.plot.all$Strain.label <- factor(box.plot.all$Strain.label, levels = c("cat-1", "N2", "MPP+", "Control"))
     name <- info.box$Name[i]
     mz <- info.box$Query.Mass[i]
     adduct <- info.box$Matched.Form[i]
-    boxes <-  ggplot(data = box.plot.all, aes(x = Strain,  y = log.intensity, fill = Strain)) +
-        geom_boxplot() +
-        scale_fill_manual(values = c("royalblue3", "lightblue4", "darkgray", "orange")) +
+    boxes <-  ggplot(data = box.plot.all, aes(x = Strain.label,  y = log.intensity, fill = Strain.label)) +
+        geom_boxplot(show.legend = FALSE) +
+        scale_fill_manual(values = c("royalblue3", "lightblue4", "orange", "darkgray")) +
         ggtitle(name, subtitle=paste0("mz = ",  mz, "", "  Adduct = ", adduct)) +
-        theme_minimal()
+        theme_minimal() +
+        xlab("") +
+        ylab("Log Intensity")
     tiff(paste0("results/comparisons/figures/comparison", name,".tiff"), width =4.5, height = 4, units = 'in', res = 300)
     print(boxes)
     dev.off()
@@ -231,3 +240,9 @@ write.table(data.plots, "results/comparisons/data_comparison_plots.txt", col.nam
 # Remove line 10 from info.box since not present in MPP+ feature table
 #info.box <- info.box[-10,]
 
+box.plot.all$Strain.label <- case_when(
+    box.plot.all$Strain == "C" ~ "Control",
+    box.plot.all$Strain == "MPP" ~ "MPP+",
+    box.plot.all$Strain == "cat1" ~ "cat-1",
+    box.plot.all$Strain == "N2" ~ "N2"
+)
