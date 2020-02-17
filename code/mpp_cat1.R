@@ -68,13 +68,13 @@ compounds <- read.table("results/comparisons/mummichog_matched_compound_all_comp
 pathways <- read.table("results/comparisons/mummichog_pathway_enrichment_compare.csv", header = T, sep = ",")
 
 pathways$logp <- -log10(pathways$FET)
-pathways$enrich <- pathways$Hits.total/pathways$Pathway.total
+pathways$enrich <- pathways$Hits.sig/pathways$Expected
 #eth.hispcauc <- merge(hisp.sub, cauc.sub, by = "pathway", all = T)    
 #eth.all <- merge(eth.hispcauc, afr.sub, by = "pathway", all = T)
 mem.sub <- pathways %>%
     filter(logp > 0.35)
 
-tiff("figures/pathways.comparison.tiff", width = 5.7, height = 4, units = 'in', res = 300)
+#tiff("figures/pathways.comparison.tiff", width = 5.7, height = 4, units = 'in', res = 300)
 ggplot(mem.sub, aes(x=logp, y = reorder(X, logp), size = Hits.total,  col = enrich)) +
     geom_point(alpha=0.7) +
     scale_color_gradient(low="blue", high="red")+
@@ -93,7 +93,29 @@ ggplot(mem.sub, aes(x=logp, y = reorder(X, logp), size = Hits.total,  col = enri
           legend.position="bottom") +
     guides(size=guide_legend("Overlap size")) +
     labs(col = "Enrichment")
-dev.off()
+#dev.off()
+
+### No overlap size on graph, enrichment as size of bubble
+mem.sub$label <- paste0(mem.sub$X," (",mem.sub$Hits.sig,"/", mem.sub$Pathway.total,")")
+ggplot(mem.sub, aes(x=logp, y = reorder(label, logp), size = enrich)) +
+    geom_point() +
+    #scale_color_gradient(low="blue", high="red") +
+    #theme_minimal() +
+    xlab("-log10(p-value)") +
+    ylab("") +
+    ggtitle("Pathways enriched by overlapping features", 
+            subtitle = "Enrichment is calculated as (Total Hits/Expected number of hits)") +
+    theme(plot.title = element_text(size = 9, face = "bold"),
+          plot.subtitle = element_text(size = 7),
+          axis.text=element_text(size=9), 
+          axis.title=element_text(size=9,face="bold"),
+          strip.text = element_text(size=7),
+          legend.text=element_text(size=7),
+          legend.title=element_text(size=8),
+          legend.position="bottom") +
+    labs(size = "Enrichment")
+
+
 
 
 # From  mummichog metaboanalyst interface, compounds that are part of pathways and in overlap:
