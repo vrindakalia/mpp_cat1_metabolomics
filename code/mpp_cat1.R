@@ -95,6 +95,8 @@ ggplot(mem.sub, aes(x=logp, y = reorder(X, logp), size = Hits.total,  col = enri
     labs(col = "Enrichment")
 #dev.off()
 
+tiff("figures/pathways.comparison.black.tiff", width = 5.7, height = 4, units = 'in', res = 300)
+
 ### No overlap size on graph, enrichment as size of bubble
 mem.sub$label <- paste0(mem.sub$X," (",mem.sub$Hits.sig,"/", mem.sub$Pathway.total,")")
 ggplot(mem.sub, aes(x=logp, y = reorder(label, logp), size = enrich)) +
@@ -116,7 +118,7 @@ ggplot(mem.sub, aes(x=logp, y = reorder(label, logp), size = enrich)) +
     labs(size = "Enrichment")
 
 
-
+dev.off()
 
 # From  mummichog metaboanalyst interface, compounds that are part of pathways and in overlap:
 #1. Glycero-3-phosphocholine C00670

@@ -390,6 +390,8 @@ ggplot(mem.sub, aes(x=logp, y = reorder(X, logp), size = Hits.total,  col = enri
     labs(col = "Enrichment")
 #dev.off()
 
+tiff("figures/pathways.cat1.black.tiff", width = 5.5, height = 4, units = 'in', res = 300)
+
 ### No overlap size on graph, enrichment as size of bubble
 mem.sub$label <- paste0(mem.sub$X," (",mem.sub$Hits.sig,"/", mem.sub$Pathway.total,")")
 ggplot(mem.sub, aes(x=logp, y = reorder(label, logp), size = enrich)) +
@@ -410,9 +412,9 @@ ggplot(mem.sub, aes(x=logp, y = reorder(label, logp), size = enrich)) +
           legend.position="bottom") +
     labs(size = "Enrichment")
 
+dev.off()
 
-
-# Heatmap
+c# Heatmap
 # Select p-value < 0.05 from regression
 outcome.mwas <- outcome %>%
     filter(mean_pvalue<0.05)
